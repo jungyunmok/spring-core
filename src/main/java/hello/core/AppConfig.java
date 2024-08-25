@@ -19,18 +19,33 @@ import org.springframework.context.annotation.Configuration;
 */
 @Configuration
 public class AppConfig {
+
+    // 자바 코드로 new MemoryMemberRepository()를 여러번 호출 -> 싱글톤이 꺠질까?
+    //@Bean memberService() ->new MemoryMemberRepository()
+    //@Bean orderService() ->new MemoryMemberRepository(), new RateDiscountPolicy()
+
+    // 예상 호출
+    // memberService -> memberRepository -> memberRepository
+    // orderService -> memberRepository
+
+    // 실제 호출 - 1번씩만 호출됨
+    // memberService -> memberRepository -> orderService
+
     @Bean
     public MemberService memberService() {
+        System.out.println("call AppConfig.memberService");
         return new MemberServiceImpl(memberRepository());
     }
 
     @Bean
     public OrderService orderService() {
+        System.out.println("call AppConfig.orderService");
         return new OrderServiceImpl(memberRepository(), discountPolicy());
     }
 
     @Bean
     public MemoryMemberRepository memberRepository() {
+        System.out.println("call AppConfig.memberRepository");
         return new MemoryMemberRepository();
     }
 
